@@ -14,5 +14,5 @@ class GaragePage(BasePage):
         return CarPage(self.driver)
 
     def click_add_expenses_button(self):
-        self.find_element(*self.locator.ADDCARBUTTON).click()
+        self.find_element(*self.locator.ADDFUELEXPENSIVEBUTTON).click()
         return ExpensesPage(self.driver)
