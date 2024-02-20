@@ -24,3 +24,8 @@ class TestCarPage:
         carpage = garagepage.click_add_car_button()
         carpage.enter_mileages('1000')
         carpage.click_add()
+        expensespage = garagepage.click_add_expenses_button()
+        expensespage.enter_number_of_liters("1000")
+        expensespage.enter_total_cost("2000")
+        expensespage.click_add()
+

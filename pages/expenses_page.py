@@ -9,7 +9,7 @@ class ExpensesPage(BasePage):
     def enter_number_of_liters(self, numberofliters):
         self.find_element(*self.locator.NUMBEROFLITERSFIELD).send_keys(numberofliters)
 
-    def total_cost(self, totalcost):
+    def enter_total_cost(self, totalcost):
         self.find_element(*self.locator.TOTALCOSTFIELD).send_keys(totalcost)
 
     def click_add(self):
