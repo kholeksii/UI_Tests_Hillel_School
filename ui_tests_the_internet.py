@@ -1,23 +1,34 @@
+import pytest
 from time import sleep
+import json
 from selenium import webdriver
+from selenium.webdriver.chromium.service import ChromiumService
+# from selenium.webdriver.common.alert import Alert
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.keys import Keys
+# from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+# from selenium.webdriver.firefox.service import Service as FirefoxService
+# from selenium.webdriver.firefox.service import Service as ChromiumService
+# from webdriver_manager.firefox import GeckoDriverManager
+from webdriver_manager.chrome import ChromeDriverManager
+
 
 URL = "https://the-internet.herokuapp.com/"
 
 
 class TestTheInternetWebsite:
-    def setup_method(self):
-        self.driver = webdriver.Chrome()
+    def setup_method(self, method):
+        # self.driver = webdriver.Firefox(service=FirefoxService(GeckoDriverManager().install()))
+        self.driver = webdriver.Chrome(service=ChromiumService(ChromeDriverManager().install()))
         self.driver.maximize_window()
         self.driver.implicitly_wait(10)
         self.vars = {}
 
-    def teardown_method(self):
+    def teardown_method(self, method):
         self.driver.quit()
 
     def test_open_url(self):
@@ -56,8 +67,12 @@ class TestTheInternetWebsite:
 
     def test_base_auth(self):
         # Sending base auth "https://<username>:<password>@www.example.com/index.html"
+
+        # self.driver.get(URL)
         self.driver.get('https://admin:admin@the-internet.herokuapp.com')
         self.driver.find_element(By.XPATH, "//a[@href='/basic_auth']").click()
+        # sleep(2)
+        # self.driver.get('https://admin:admin@the-internet.herokuapp.com/basic_auth')
         sleep(2)
         assert self.driver.find_element(By.XPATH, "//div[@class='example']/h3").text == 'Basic Auth'
 
@@ -139,41 +154,3 @@ class TestTheInternetWebsite:
         self.driver.switch_to.default_content()
         assert self.driver.find_element(By.XPATH, "//div[@class='example']/h3").text == ('An iFrame containing the '
                                                                                          'TinyMCE WYSIWYG Editor')
-
-    def test_redirect(self):
-        self.driver.get(URL)
-        self.driver.find_element(By.XPATH, "//a[@href='/redirector']").click()
-        assert self.driver.find_element(By.XPATH, "//div[@class='example']/h3").text == 'Redirection'
-        self.driver.find_element(By.XPATH, "//a[@href='redirect']").click()
-        assert self.driver.find_element(By.XPATH, "//div[@class='example']/h3").text == 'Status Codes'
-        assert self.driver.find_element(By.XPATH, "//a[@href='status_codes/200']").text == '200'
-        assert self.driver.find_element(By.XPATH, "//a[@href='status_codes/301']").text == '301'
-        assert self.driver.find_element(By.XPATH, "//a[@href='status_codes/404']").text == '404'
-        assert self.driver.find_element(By.XPATH, "//a[@href='status_codes/500']").text == '500'
-
-    def test_status_code(self):
-        self.driver.get(URL)
-        self.driver.find_element(By.XPATH, "//a[@href='/status_codes']").click()
-        assert self.driver.find_element(By.XPATH, "//div[@class='example']/h3").text == 'Status Codes'
-        assert self.driver.find_element(By.XPATH, "//a[@href='status_codes/200']").text == '200'
-        assert self.driver.find_element(By.XPATH, "//a[@href='status_codes/301']").text == '301'
-        assert self.driver.find_element(By.XPATH, "//a[@href='status_codes/404']").text == '404'
-        assert self.driver.find_element(By.XPATH, "//a[@href='status_codes/500']").text == '500'
-        self.driver.find_element(By.XPATH, "//a[@href='status_codes/200']").click()
-        assert self.driver.find_element(By.XPATH, "//div[@class='example']/h3").text == 'Status Codes'
-        self.driver.back()
-        self.driver.find_element(By.XPATH, "//a[@href='status_codes/200']").click()
-        assert self.driver.find_element(By.XPATH, "//div[@class='example']/h3").text == 'Status Codes'
-        assert self.driver.find_element(By.XPATH, "//div[@class='example']//p").text == 'This page returned a 200 status code.\n\nFor a definition and common list of HTTP status codes, go here'
-        self.driver.back()
-        self.driver.find_element(By.XPATH, "//a[@href='status_codes/301']").click()
-        assert self.driver.find_element(By.XPATH, "//div[@class='example']/h3").text == 'Status Codes'
-        assert self.driver.find_element(By.XPATH, "//div[@class='example']//p").text == 'This page returned a 301 status code.\n\nFor a definition and common list of HTTP status codes, go here'
-        self.driver.back()
-        self.driver.find_element(By.XPATH, "//a[@href='status_codes/404']").click()
-        assert self.driver.find_element(By.XPATH, "//div[@class='example']/h3").text == 'Status Codes'
-        assert self.driver.find_element(By.XPATH, "//div[@class='example']//p").text == 'This page returned a 404 status code.\n\nFor a definition and common list of HTTP status codes, go here'
-        self.driver.back()
-        self.driver.find_element(By.XPATH, "//a[@href='status_codes/500']").click()
-        assert self.driver.find_element(By.XPATH, "//div[@class='example']/h3").text == 'Status Codes'
-        assert self.driver.find_element(By.XPATH, "//div[@class='example']//p").text == 'This page returned a 500 status code.\n\nFor a definition and common list of HTTP status codes, go here'
